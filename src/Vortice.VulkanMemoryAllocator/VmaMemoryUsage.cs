@@ -23,5 +23,4 @@ public enum VmaMemoryUsage
     Auto = 7,
     AutoPreferDevice = 8,
     AutoPreferHost = 9,
-    VMA_MEMORY_USAGE_MAX_ENUM = 0x7FFFFFFF
 }

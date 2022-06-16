@@ -11,36 +11,32 @@ public enum VmaAllocationCreateFlags : uint
     /// Use it for special, big resources, like fullscreen images used as attachments.
     /// </summary>
     DedicatedMemory = 0x00000001,
-
-    /** \brief Set this flag to only try to allocate from existing `VkDeviceMemory` blocks and never create new such block.
-
-    If new allocation cannot be placed in any of the existing blocks, allocation
-    fails with `VK_ERROR_OUT_OF_DEVICE_MEMORY` error.
-
-    You should not use #VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT and
-    #VMA_ALLOCATION_CREATE_NEVER_ALLOCATE_BIT at the same time. It makes no sense.
-    */
+    /// <summary>
+    /// Set this flag to only try to allocate from existing `VkDeviceMemory` blocks and never create new such block.
+    ///
+    /// If new allocation cannot be placed in any of the existing blocks, allocation fails with `VK_ERROR_OUT_OF_DEVICE_MEMORY` error.
+    ///
+    /// You should not use <see cref="DedicatedMemory"/> and <see cref="NeverAllocate"/> at the same time. It makes no sense.
+    /// </summary>
     NeverAllocate = 0x00000002,
-    /** \brief Set this flag to use a memory that will be persistently mapped and retrieve pointer to it.
-
-    Pointer to mapped memory will be returned through VmaAllocationInfo::pMappedData.
-
-    It is valid to use this flag for allocation made from memory type that is not
-    `HOST_VISIBLE`. This flag is then ignored and memory is not mapped. This is
-    useful if you need an allocation that is efficient to use on GPU
-    (`DEVICE_LOCAL`) and still want to map it directly if possible on platforms that
-    support it (e.g. Intel GPU).
-    */
+    /// <summary>
+    /// Set this flag to use a memory that will be persistently mapped and retrieve pointer to it.
+    /// Pointer to mapped memory will be returned through <see cref="VmaAllocationInfo.pMappedData"/>.
+    ///
+    /// It is valid to use this flag for allocation made from memory type that is not `HOST_VISIBLE`.
+    /// This flag is then ignored and memory is not mapped. This is useful if you need an allocation that is efficient to use on GPU
+    /// (`DEVICE_LOCAL`) and still want to map it directly if possible on platforms that support it (e.g. Intel GPU).
+    /// </summary>
     Mapped = 0x00000004,
     /// <summary>
-    /// Preserved for backward compatibility. Consider using <see cref="VMA.vmaSetAllocationName"/> instead.
+    /// Preserved for backward compatibility. Consider using <see cref="Vma.vmaSetAllocationName"/> instead.
     /// </summary>
     UserDataCopyString = 0x00000020,
-    /** Allocation will be created from upper stack in a double stack pool.
-
-    This flag is only allowed for custom pools created with #VMA_POOL_CREATE_LINEAR_ALGORITHM_BIT flag.
-    */
-    VMA_ALLOCATION_CREATE_UPPER_ADDRESS_BIT = 0x00000040,
+    /// <summary>
+    /// Allocation will be created from upper stack in a double stack pool.
+    /// This flag is only allowed for custom pools created with #VMA_POOL_CREATE_LINEAR_ALGORITHM_BIT flag.
+    /// </summary>
+    UpperAddress = 0x00000040,
     /** Create both buffer/image and allocation, but don't bind them together.
     It is useful when you want to bind yourself to do some more advanced binding, e.g. using some extensions.
     The flag is meaningful only with functions that bind by default: vmaCreateBuffer(), vmaCreateImage().
@@ -50,17 +46,18 @@ public enum VmaAllocationCreateFlags : uint
     through `VkMemoryDedicatedAllocateInfoKHR` structure in case the allocation ends up in its own memory block,
     use also flag #VMA_ALLOCATION_CREATE_CAN_ALIAS_BIT.
     */
-    VMA_ALLOCATION_CREATE_DONT_BIND_BIT = 0x00000080,
-    /** Create allocation only if additional device memory required for it, if any, won't exceed
-    memory budget. Otherwise return `VK_ERROR_OUT_OF_DEVICE_MEMORY`.
-    */
-    VMA_ALLOCATION_CREATE_WITHIN_BUDGET_BIT = 0x00000100,
-    /** \brief Set this flag if the allocated memory will have aliasing resources.
-    
-    Usage of this flag prevents supplying `VkMemoryDedicatedAllocateInfoKHR` when #VMA_ALLOCATION_CREATE_DEDICATED_MEMORY_BIT is specified.
-    Otherwise created dedicated memory will not be suitable for aliasing resources, resulting in Vulkan Validation Layer errors.
-    */
-    VMA_ALLOCATION_CREATE_CAN_ALIAS_BIT = 0x00000200,
+    DontBind = 0x00000080,
+    /// <summary>
+    /// Create allocation only if additional device memory required for it, if any, won't exceed memory budget. Otherwise return `VK_ERROR_OUT_OF_DEVICE_MEMORY`.
+    /// </summary>
+    WithinBudget = 0x00000100,
+    /// <summary>
+    /// Set this flag if the allocated memory will have aliasing resources.
+    ///
+    /// Usage of this flag prevents supplying `VkMemoryDedicatedAllocateInfoKHR` when <see cref="DedicatedMemory"/> is specified.
+    /// Otherwise created dedicated memory will not be suitable for aliasing resources, resulting in Vulkan Validation Layer errors.
+    /// </summary>
+    CanAlias = 0x00000200,
     /**
     Requests possibility to map the allocation (using vmaMapMemory() or #VMA_ALLOCATION_CREATE_MAPPED_BIT).
     
@@ -88,7 +85,7 @@ public enum VmaAllocationCreateFlags : uint
     Declares that mapped memory can be read, written, and accessed in random order,
     so a `HOST_CACHED` memory type is required.
     */
-    VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT = 0x00000800,
+    HostAccessRandom = 0x00000800,
     /**
     Together with #VMA_ALLOCATION_CREATE_HOST_ACCESS_SEQUENTIAL_WRITE_BIT or #VMA_ALLOCATION_CREATE_HOST_ACCESS_RANDOM_BIT,
     it says that despite request for host access, a not-`HOST_VISIBLE` memory type can be selected
@@ -100,31 +97,34 @@ public enum VmaAllocationCreateFlags : uint
     To prepare for this possibility, don't forget to add appropriate flags like
     `VK_BUFFER_USAGE_TRANSFER_DST_BIT`, `VK_BUFFER_USAGE_TRANSFER_SRC_BIT` to the parameters of created buffer or image.
     */
-    VMA_ALLOCATION_CREATE_HOST_ACCESS_ALLOW_TRANSFER_INSTEAD_BIT = 0x00001000,
-    /** Allocation strategy that chooses smallest possible free range for the allocation
-    to minimize memory usage and fragmentation, possibly at the expense of allocation time.
-    */
+    HostAccessAllowTransferInstead = 0x00001000,
+    /// <summary>
+    /// Allocation strategy that chooses smallest possible free range for the allocation
+    /// to minimize memory usage and fragmentation, possibly at the expense of allocation time.
+    /// </summary>
     StrategyMinMemory = 0x00010000,
-    /** Allocation strategy that chooses first suitable free range for the allocation -
-    not necessarily in terms of the smallest offset but the one that is easiest and fastest to find
-    to minimize allocation time, possibly at the expense of allocation quality.
-    */
-    VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT = 0x00020000,
+    /// <summary>
+    /// Allocation strategy that chooses first suitable free range for the allocation -
+    /// not necessarily in terms of the smallest offset but the one that is easiest and fastest to find
+    /// to minimize allocation time, possibly at the expense of allocation quality.
+    /// </summary>
+    StrategyMinTime = 0x00020000,
     /// <summary>
     /// Allocation strategy that chooses always the lowest offset in available space.
-    // This is not the most efficient strategy but achieves highly packed data.
-    // Used internally by defragmentation, not recomended in typical usage.
+    /// This is not the most efficient strategy but achieves highly packed data.
+    /// Used internally by defragmentation, not recomended in typical usage.
     /// </summary>
     StrategyMinOffset = 0x00040000,
     /// <summary>
     /// Alias to <see cref="StrategyMinMemory"/>.
     /// </summary>
     BestFit = StrategyMinMemory,
-    /** Alias to #VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT.
-    */
-    VMA_ALLOCATION_CREATE_STRATEGY_FIRST_FIT_BIT = VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT,
+    /// <summary>
+    /// Alias to <see cref="StrategyMinTime"/>.
+    /// </summary>
+    StrategyFirstFit = StrategyMinTime,
     /// <summary>
     /// A bit mask to extract only `STRATEGY` bits from entire set of flags.
     /// </summary>
-    StrategyMask = StrategyMinMemory | VMA_ALLOCATION_CREATE_STRATEGY_MIN_TIME_BIT | StrategyMinOffset,
+    StrategyMask = StrategyMinMemory | StrategyMinTime | StrategyMinOffset,
 }

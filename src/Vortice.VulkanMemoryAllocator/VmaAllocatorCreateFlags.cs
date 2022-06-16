@@ -9,8 +9,8 @@ public enum VmaAllocatorCreateFlags : uint
     ExternallySynchronized = 0x00000001,
     KHRDedicatedAllocation = 0x00000002,
     KHRBindMemory2 = 0x00000004,
-    VMA_ALLOCATOR_CREATE_EXT_MEMORY_BUDGET_BIT = 0x00000008,
-    VMA_ALLOCATOR_CREATE_AMD_DEVICE_COHERENT_MEMORY_BIT = 0x00000010,
-    VMA_ALLOCATOR_CREATE_BUFFER_DEVICE_ADDRESS_BIT = 0x00000020,
-    VMA_ALLOCATOR_CREATE_EXT_MEMORY_PRIORITY_BIT = 0x00000040,
+    ExtMemoryBudget = 0x00000008,
+    AMDDeviceCoherentMemory = 0x00000010,
+    BufferDeviceAddress = 0x00000020,
+    ExtMemoryPriority = 0x00000040,
 }
