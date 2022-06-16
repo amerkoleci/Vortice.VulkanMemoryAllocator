@@ -12,16 +12,25 @@ public static unsafe class Vma
 
     private static readonly delegate* unmanaged[Cdecl]<VmaAllocatorCreateInfo*, out VmaAllocator, VkResult> vmaCreateAllocator_ptr;
     private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, void> vmaDestroyAllocator_ptr;
-    private static readonly delegate* unmanaged[Cdecl]<IntPtr, VkBufferCreateInfo*, VmaAllocationCreateInfo*, out VkBuffer, out VmaAllocation, VmaAllocationInfo*, VkResult> vmaCreateBuffer_ptr;
+    private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, VkBufferCreateInfo*, VmaAllocationCreateInfo*, out VkBuffer, out VmaAllocation, VmaAllocationInfo*, VkResult> vmaCreateBuffer_ptr;
     private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, VkBuffer, VmaAllocation, void> vmaDestroyBuffer_ptr;
+    private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, VkImageCreateInfo*, VmaAllocationCreateInfo*, out VkImage, out VmaAllocation, VmaAllocationInfo*, VkResult> vmaCreateImage_ptr;
+    private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, VmaAllocation, VkImageCreateInfo*, out VkImage, VkResult> vmaCreateAliasingImage_ptr;
+    private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, VkImage, VmaAllocation, void> vmaDestroyImage_ptr;
+
     private static readonly delegate* unmanaged[Cdecl]<VmaAllocator, VmaAllocation, sbyte*, void> vmaSetAllocationName_ptr;
 
     static Vma()
     {
         vmaCreateAllocator_ptr = (delegate* unmanaged[Cdecl]<VmaAllocatorCreateInfo*, out VmaAllocator, VkResult>)LoadFunction(nameof(vmaCreateAllocator));
         vmaDestroyAllocator_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, void>)LoadFunction(nameof(vmaDestroyAllocator));
-        vmaCreateBuffer_ptr = (delegate* unmanaged[Cdecl]<IntPtr, VkBufferCreateInfo*, VmaAllocationCreateInfo*, out VkBuffer, out VmaAllocation, VmaAllocationInfo*, VkResult>)LoadFunction("vmaCreateBuffer");
+        vmaCreateBuffer_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, VkBufferCreateInfo*, VmaAllocationCreateInfo*, out VkBuffer, out VmaAllocation, VmaAllocationInfo*, VkResult>)LoadFunction(nameof(vmaCreateBuffer));
         vmaDestroyBuffer_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, VkBuffer, VmaAllocation, void>)LoadFunction(nameof(vmaDestroyBuffer));
+
+        vmaCreateImage_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, VkImageCreateInfo*, VmaAllocationCreateInfo*, out VkImage, out VmaAllocation, VmaAllocationInfo*, VkResult>)LoadFunction(nameof(vmaCreateImage));
+        vmaCreateAliasingImage_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, VmaAllocation, VkImageCreateInfo*, out VkImage, VkResult>)LoadFunction(nameof(vmaCreateAliasingImage));
+        vmaDestroyImage_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, VkImage, VmaAllocation, void>)LoadFunction(nameof(vmaDestroyImage));
+
         vmaSetAllocationName_ptr = (delegate* unmanaged[Cdecl]<VmaAllocator, VmaAllocation, sbyte*, void>)LoadFunction(nameof(vmaSetAllocationName));
     }
 
@@ -49,7 +58,7 @@ public static unsafe class Vma
         {
             usage = VmaMemoryUsage.Auto
         };
-        return vmaCreateBuffer_ptr(allocator.Handle, pBufferCreateInfo, &allocationInfo, out buffer, out allocation, null);
+        return vmaCreateBuffer_ptr(allocator, pBufferCreateInfo, &allocationInfo, out buffer, out allocation, null);
     }
 
     public static VkResult vmaCreateBuffer(
@@ -63,7 +72,7 @@ public static unsafe class Vma
         {
             usage = VmaMemoryUsage.Auto
         };
-        return vmaCreateBuffer_ptr(allocator.Handle, pBufferCreateInfo, &allocationInfo, out buffer, out allocation, pAllocationInfo);
+        return vmaCreateBuffer_ptr(allocator, pBufferCreateInfo, &allocationInfo, out buffer, out allocation, pAllocationInfo);
     }
 
     public static VkResult vmaCreateBuffer(
@@ -73,7 +82,7 @@ public static unsafe class Vma
         out VkBuffer buffer,
         out VmaAllocation allocation)
     {
-        return vmaCreateBuffer_ptr(allocator.Handle, pBufferCreateInfo, pAllocationCreateInfo, out buffer, out allocation, null);
+        return vmaCreateBuffer_ptr(allocator, pBufferCreateInfo, pAllocationCreateInfo, out buffer, out allocation, null);
     }
 
     public static VkResult vmaCreateBuffer(
@@ -84,12 +93,74 @@ public static unsafe class Vma
         out VmaAllocation allocation,
         VmaAllocationInfo* pAllocationInfo)
     {
-        return vmaCreateBuffer_ptr(allocator.Handle, pBufferCreateInfo, pAllocationCreateInfo, out buffer, out allocation, pAllocationInfo);
+        return vmaCreateBuffer_ptr(allocator, pBufferCreateInfo, pAllocationCreateInfo, out buffer, out allocation, pAllocationInfo);
     }
 
     public static void vmaDestroyBuffer(VmaAllocator allocator, VkBuffer buffer, VmaAllocation allocation)
     {
         vmaDestroyBuffer_ptr(allocator, buffer, allocation);
+    }
+
+    public static VkResult vmaCreateImage(
+        VmaAllocator allocator,
+        VkImageCreateInfo* pImageCreateInfo,
+        out VkImage image,
+        out VmaAllocation allocation)
+    {
+        VmaAllocationCreateInfo allocationInfo = new()
+        {
+            usage = VmaMemoryUsage.Auto
+        };
+        return vmaCreateImage_ptr(allocator, pImageCreateInfo, &allocationInfo, out image, out allocation, null);
+    }
+
+    public static VkResult vmaCreateImage(
+        VmaAllocator allocator,
+        VkImageCreateInfo* pImageCreateInfo,
+        out VkImage image,
+        out VmaAllocation allocation,
+        VmaAllocationInfo* pAllocationInfo)
+    {
+        VmaAllocationCreateInfo allocationInfo = new()
+        {
+            usage = VmaMemoryUsage.Auto
+        };
+        return vmaCreateImage_ptr(allocator, pImageCreateInfo, &allocationInfo, out image, out allocation, pAllocationInfo);
+    }
+
+    public static VkResult vmaCreateImage(
+        VmaAllocator allocator,
+        VkImageCreateInfo* pImageCreateInfo,
+        VmaAllocationCreateInfo* pAllocationCreateInfo,
+        out VkImage image,
+        out VmaAllocation allocation)
+    {
+        return vmaCreateImage_ptr(allocator, pImageCreateInfo, pAllocationCreateInfo, out image, out allocation, null);
+    }
+
+    public static VkResult vmaCreateImage(
+        VmaAllocator allocator,
+        VkImageCreateInfo* pImageCreateInfo,
+        VmaAllocationCreateInfo* pAllocationCreateInfo,
+        out VkImage image,
+        out VmaAllocation allocation,
+        VmaAllocationInfo* pAllocationInfo)
+    {
+        return vmaCreateImage_ptr(allocator, pImageCreateInfo, pAllocationCreateInfo, out image, out allocation, pAllocationInfo);
+    }
+
+    public static VkResult vmaCreateAliasingImage(
+        VmaAllocator allocator,
+        VmaAllocation allocation,
+        VkImageCreateInfo* pImageCreateInfo,
+        out VkImage image)
+    {
+        return vmaCreateAliasingImage_ptr(allocator, allocation, pImageCreateInfo, out image);
+    }
+
+    public static void vmaDestroyImage(VmaAllocator allocator, VkImage image, VmaAllocation allocation)
+    {
+        vmaDestroyImage_ptr(allocator, image, allocation);
     }
 
     public static void vmaSetAllocationName(VmaAllocator allocator, VmaAllocation allocation, string name)
@@ -100,7 +171,6 @@ public static unsafe class Vma
             vmaSetAllocationName_ptr(allocator, allocation, dataPtr);
         }
     }
-
 
     private static IntPtr LoadNativeLibrary()
     {

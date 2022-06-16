@@ -15,23 +15,25 @@ public unsafe struct VmaAllocatorCreateInfo
     /// <remarks>
     /// It must be valid throughout whole lifetime of created allocator.
     /// </remarks>
-    public VkPhysicalDevice physicalDevice;
+    public VkPhysicalDevice PhysicalDevice;
     /// <summary>
     /// Vulkan device.
     /// </summary>
     /// <remarks>
     /// It must be valid throughout whole lifetime of created allocator.
     /// </remarks>
-    public VkDevice device;
+    public VkDevice Device;
 
     /// Preferred size of a single `VkDeviceMemory` block to be allocated from large heaps > 1 GiB. Optional.
     /** Set to 0 to use default, which is currently 256 MiB. */
     public ulong preferredLargeHeapBlockSize;
-    /// Custom CPU memory allocation callbacks. Optional.
-    /** Optional, can be null. When specified, will also be used for all CPU-side memory allocations. */
+    /// <summary>
+    /// Optional custom CPU memory allocation callbacks. 
+    /// </summary>
     public VkAllocationCallbacks* pAllocationCallbacks;
+    /// <summary>
     /// Informative callbacks for `vkAllocateMemory`, `vkFreeMemory`. Optional.
-    /** Optional, can be null. */
+    /// </summary>
     public /*VmaDeviceMemoryCallbacks*/void* pDeviceMemoryCallbacks;
     /** \brief Either null or a pointer to an array of limits on maximum number of bytes that can be allocated out of particular Vulkan memory heap.
 
@@ -58,17 +60,14 @@ public unsafe struct VmaAllocatorCreateInfo
     VK_AMD_memory_overallocation_behavior extension.
     */
     public ulong* pHeapSizeLimit;
-
     /// <summary>
     /// Pointers to Vulkan functions. Can be null.
     /// </summary>
     internal VmaVulkanFunctions* pVulkanFunctions;
-
-    /** \brief Handle to Vulkan instance object.
-
-    Starting from version 3.0.0 this member is no longer optional, it must be set!
-    */
-    public VkInstance instance;
+    /// <summary>
+    /// Handle to Vulkan instance object.
+    /// </summary>
+    public VkInstance Instance;
     /** \brief Optional. The highest version of Vulkan that the application is designed to use.
 
     It must be a value in the format as created by macro `VK_MAKE_VERSION` or a constant like: `VK_API_VERSION_1_1`, `VK_API_VERSION_1_0`.
@@ -77,7 +76,7 @@ public unsafe struct VmaAllocatorCreateInfo
     Only versions 1.0, 1.1, 1.2, 1.3 are supported by the current implementation.
     Leaving it initialized to zero is equivalent to `VK_API_VERSION_1_0`.
     */
-    public VkVersion vulkanApiVersion;
+    public VkVersion VulkanApiVersion;
     /** \brief Either null or a pointer to an array of external memory handle types for each Vulkan memory type.
 
     If not NULL, it must be a pointer to an array of `VkPhysicalDeviceMemoryProperties::memoryTypeCount`
